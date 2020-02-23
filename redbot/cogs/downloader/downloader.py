@@ -236,7 +236,7 @@ class Downloader(commands.Cog):
         await self.conf.installed_cogs.set(installed_cogs)
         await self.conf.installed_libraries.set(installed_libraries)
 
-    async def _shared_lib_load_check(self, cog_name: str) -> Optional[Repo]
+    async def _shared_lib_load_check(self, cog_name: str) -> Optional[Repo]:
         is_installed, cog = await self.is_installed(cog_name)
         # it's not gonna be None when `is_installed` is True
         # if we'll use typing_extensions in future, `Literal` can solve this
