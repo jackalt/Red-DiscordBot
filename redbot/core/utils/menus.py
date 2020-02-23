@@ -208,7 +208,7 @@ def start_adding_reactions(
         warnings.warn(
             "`loop` kwarg will be removed in first minor release after [PUT A DATE HERE]"
             " and is currently ignored. Call this from the related event loop.",
-            DeprecationWarning
+            DeprecationWarning,
         )
 
     return loop.create_task(task())
