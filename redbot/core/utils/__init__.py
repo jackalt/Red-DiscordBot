@@ -180,8 +180,8 @@ def bounded_gather_iter(
     """
     if loop is not None:
         warnings.warn(
-            "Explicitly passing the loop will not work in Red 3.4+ and is currently ignored."
-            "Call this from the related event loop.",
+            "`loop` kwarg will be removed in first minor release after [PUT A DATE HERE]"
+            " and is currently ignored. Call this from the related event loop.",
             DeprecationWarning,
         )
 
@@ -237,8 +237,8 @@ def bounded_gather(
     """
     if loop is not None:
         warnings.warn(
-            "Explicitly passing the loop will not work in Red 3.4+ and is currently ignored."
-            "Call this from the related event loop.",
+            "`loop` kwarg will be removed in first minor release after [PUT A DATE HERE]"
+            " and is currently ignored. Call this from the related event loop.",
             DeprecationWarning,
         )
 
