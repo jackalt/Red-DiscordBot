@@ -279,6 +279,8 @@ class Alias(commands.Cog):
                 ).format(name=alias_name)
             )
             return
+
+        given_command_exists = self.bot.get_command(command) is not None
         # endregion
 
         # At this point we know we need to make a new alias
@@ -289,9 +291,19 @@ class Alias(commands.Cog):
         except ArgParseError as e:
             return await ctx.send(" ".join(e.args))
 
-        await ctx.send(
-            _("A new alias with the trigger `{name}` has been created.").format(name=alias_name)
-        )
+        if given_command_exists:
+            await ctx.send(
+                _("A new alias with the trigger `{name}` has been created.").format(
+                    name=alias_name
+                )
+            )
+        else:
+            await ctx.send(
+                _(
+                    "A new alias with the trigger `{name}` has been created"
+                    " but the given command may not exist. Please verify that the alias works."
+                ).format(name=alias_name)
+            )
 
     @checks.is_owner()
     @global_.command(name="add")
