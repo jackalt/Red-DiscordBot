@@ -1211,7 +1211,7 @@ class RepoManager:
                     branch = tree_url_match["branch"]
         return url, branch
 
-    async def _restore_from_backup(self):
+    async def _restore_from_backup(self) -> None:
         """Restore cogs using `repos.json` in cog's data path.
 
         Used by `redbot-setup restore` cli command.
@@ -1221,12 +1221,11 @@ class RepoManager:
         for repo_data in raw_repos:
             try:
                 await self.add_repo(repo_data["url"], repo_data["name"], repo_data["branch"])
-            except errors.CloningError as err:
+            except errors.CloningError:
                 log.exception(
                     "Something went wrong whilst cloning %s (to branch: %s)",
                     repo_data["url"],
                     repo_data["branch"],
-                    exc_info=err,
                 )
             except OSError:
                 log.exception(
@@ -1234,4 +1233,3 @@ class RepoManager:
                     repo_data["url"],
                     repo_data["name"],
                 )
-        from .downloader import Downloader
