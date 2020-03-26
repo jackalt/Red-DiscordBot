@@ -95,26 +95,29 @@ class Downloader(commands.Cog):
 
     async def initialize(self) -> None:
         await self._repo_manager.initialize()
-        await self._maybe_update_config()
+        await self._maybe_update_config(self.conf)
         self._ready.set()
 
-    async def _maybe_update_config(self) -> None:
-        schema_version = await self.conf.schema_version()
+    @classmethod
+    async def _maybe_update_config(cls, conf: Config) -> None:
+        # this method might also be called from RepoManager._restore_from_backup()
+        schema_version = await conf.schema_version()
 
         if schema_version == 0:
-            await self._schema_0_to_1()
+            await cls._schema_0_to_1(conf)
             schema_version += 1
-            await self.conf.schema_version.set(schema_version)
+            await conf.schema_version.set(schema_version)
 
-    async def _schema_0_to_1(self):
+    @classmethod
+    async def _schema_0_to_1(cls, conf: Config) -> None:
         """
         This contains migration to allow saving state
         of both installed cogs and shared libraries.
         """
-        old_conf = await self.conf.get_raw("installed", default=[])
+        old_conf = await conf.get_raw("installed", default=[])
         if not old_conf:
             return
-        async with self.conf.installed_cogs() as new_cog_conf:
+        async with conf.installed_cogs() as new_cog_conf:
             for cog_json in old_conf:
                 repo_name = cog_json["repo_name"]
                 module_name = cog_json["cog_name"]
@@ -126,7 +129,7 @@ class Downloader(commands.Cog):
                     "commit": "",
                     "pinned": False,
                 }
-        await self.conf.clear_raw("installed")
+        await conf.clear_raw("installed")
         # no reliable way to get installed libraries (i.a. missing repo name)
         # but it only helps `[p]cog update` run faster so it's not an issue
 
