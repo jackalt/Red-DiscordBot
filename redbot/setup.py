@@ -423,6 +423,25 @@ class RestoreInfo:
             print("    - DB password: ***")
 
     def ask_for_changes(self) -> None:
+        # GH-3115
+        if self.storage_type is BackendType.POSTGRES:
+            print(
+                "Converting from and to PostgreSQL backend isn't currently supported."
+                " After restoring, instance will be using JSON backend."
+            )
+            self.storage_type = BackendType.JSON
+            self.storage_details = {}
+        elif self.backend_unavailable:
+            # this `if` is also here because of GH-3115:
+            # normally users of unavailable backends should be asked to choose a different backend
+            # but currently only JSON is available
+            print(
+                "Original storage backend is no longer available in Red."
+                " After restoring, instance will be using JSON backend."
+            )
+            self.storage_type = BackendType.JSON
+            self.storage_details = {}
+
         self._ask_for_optional_changes()
         self._ask_for_required_changes()
 
@@ -434,10 +453,13 @@ class RestoreInfo:
                 "Do you want to use different data path?"
             ):
                 self._ask_for_data_path()
+            # GH-3115
+            """
             if not self.backend_unavailable and click.confirm(
                 "Do you want to use different storage backend or change storage details?"
             ):
                 self._ask_for_storage()
+            """
 
     def _ask_for_required_changes(self) -> None:
         if self.name_used:
@@ -452,12 +474,15 @@ class RestoreInfo:
                 " You have to choose a different path."
             )
             self._ask_for_data_path()
+        # GH-3115
+        """
         if self.backend_unavailable:
             print(
                 "Original storage backend is no longer available in Red."
                 " You have to choose a different backend."
             )
             self._ask_for_storage()
+        """
 
     def _ask_for_name(self) -> None:
         self.name = get_name()
