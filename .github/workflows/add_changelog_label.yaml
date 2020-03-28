@@ -1,25 +1,21 @@
 name: Add changelog label to merged PR
 on:
-  pull_request:
-    types: [closed]
-
+  repository_dispatch:
+    types:
+      - hmm
 jobs:
   build:
-    if: github.event.pull_request.merged
     runs-on: ubuntu-latest
     steps:
+      - name: echo payload
+        run: echo ${{ github.event.client_payload }}
       - name: Apply label
         uses: actions/github-script@0.4.0
         with:
           github-token: ${{secrets.GITHUB_TOKEN}}
           script: |
-            const is_changelog_label = (label) => label.name.startsWith('Changelog Entry: ');
-            if (context.payload.pull_request.labels.some(is_changelog_label)) {
-                console.log('Issue already has Changelog Entry label, skipping...');
-                return;
-            }
             github.issues.addLabels({
-              issue_number: context.issue.number,
+              issue_number: 3,
               owner: context.repo.owner,
               repo: context.repo.repo,
               labels: ['Changelog Entry: Pending']
